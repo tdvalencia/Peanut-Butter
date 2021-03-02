@@ -40,12 +40,14 @@ async def choose(ctx, *choices: str):
 
 @bot.command()
 async def cool(ctx, name: str):
-    """Repeats a message multiple times."""
+    """Decides if u cool"""
     print(name.lower())
     if name.lower() == 'tony' or name.lower() == 'hamburger' or name.lower() == 'hamburgers':
         await ctx.send('{} is cool'.format(name))
     else:
         await ctx.send('{} is not cool'.format(name))
+
+#TODO: Try catch block ^^^^
 
 @bot.command()
 async def joined(ctx, member: discord.Member):
