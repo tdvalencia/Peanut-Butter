@@ -9,7 +9,14 @@ intents.members = True
 bot = commands.Bot(command_prefix='#', description=description, intents=intents)
 
 dataPath = os.path.dirname(__file__) + '\\data\\'
-brrtUsed = 0
+brrtUsed = coolUsed = 0
+
+def getData():
+    global brrtUsed, coolUsed
+    with open(dataPath + 'stats.json', 'r') as f:
+        data = json.load(f)
+        brrtUsed = data['brrt'][0]['timesUsed']
+        coolUsed = data['cool'][0]['timesUsed']
 
 def getToken():
     with open(dataPath + 'token.txt', 'r') as f:
@@ -22,8 +29,16 @@ async def collectStats():
 
     while not bot.is_closed():
         try:
-            with open(dataPath + 'stats.txt', 'a') as f:
-                f.write(f'Time: {int(time.time())} | Brrt Used: {brrtUsed}\n')
+            with open(dataPath + 'stats.json', 'r+') as jsonFile:
+                data = json.load(jsonFile)
+
+                data['brrt'][0]['timesUsed'] = brrtUsed
+                data['cool'][0]['timesUsed'] = coolUsed
+
+                jsonFile.seek(0) #Set cursor to beginning
+                json.dump(data, jsonFile)
+                jsonFile.truncate() #deals with case if new data is smaller than prev
+
             await asyncio.sleep(120)
         except Exception as e:
             print(e)
@@ -45,14 +60,11 @@ async def on_member_join(member):
 @bot.command()
 async def cool(ctx, name: str):
     """Decides if u cool"""
+    global coolUsed
     cool = False
-
-    if name == None:
-        await ctx.send('Enter a string after the command. ex "#cool Tony"')
 
     with open(dataPath + 'cool.txt', 'r') as f:
         nameList = f.readline().replace(' ', '').split(',')
-        print(nameList)
 
     for names in nameList:
         if name.lower() == names:
@@ -62,32 +74,39 @@ async def cool(ctx, name: str):
         await ctx.send('{} is cool'.format(name))
     else:
         await ctx.send('{} is not cool'.format(name))
+    coolUsed += 1
 
 @bot.command()
 async def brrt(ctx, name: str):
 
     if ctx.message.author.guild_permissions.administrator:
         global brrtUsed
-        memeber = ''
+        member = None
 
         for user in ctx.guild.members:
             if name == user.name:
-                memeber = user
+                member = user
         
         try:
-            await ctx.send('air strike in bound')
-            for i in range(0, 20):
-                await ctx.send(memeber.mention)
-            brrtUsed += 1
+            await ctx.message.delete()
+            if member != None:
+                await ctx.send('airstrike inbound')
+                time.sleep(3)
+                for i in range(0, 20):
+                    await ctx.send(member.mention)
+                brrtUsed += 1
+            else:
+                raise Exception
         except:
-            await ctx.send('user not found')
+            await ctx.send('target not found')
     else:
-        await ctx.send('ur not cool enough')
+        await ctx.send('u do not have airstrike capabilities')
 
 @bot.command()
 async def stats(ctx, member: discord.Member):
     """Says when a member joined."""
     await ctx.send('{0.name} joined in {0.joined_at}'.format(member))
 
+getData()
 bot.loop.create_task(collectStats())
 bot.run(getToken())
