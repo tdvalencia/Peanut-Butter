@@ -8,32 +8,42 @@ intents.members = True
 
 bot = commands.Bot(command_prefix='#', description=description, intents=intents)
 
+userDic = {}
 dataPath = os.path.dirname(__file__) + '\\data\\'
-brrtUsed = coolUsed = 0
 
 def getData():
-    global brrtUsed, coolUsed
+    global userDic
     with open(dataPath + 'stats.json', 'r') as f:
         data = json.load(f)
-        brrtUsed = data['brrt'][0]['timesUsed']
-        coolUsed = data['cool'][0]['timesUsed']
+        userDic = data
 
 def getToken():
     with open(dataPath + 'token.txt', 'r') as f:
         token = f.readline()
     return token
 
+def addDict(user: str):
+    global userDic
+    inside = False
+
+    for key in userDic.keys():
+        if key == user:
+            inside = True
+
+    if inside:
+        userDic.update({user: userDic.get(user) + 1})
+    else:
+        userDic[user] = 1
+
 async def collectStats():
     await bot.wait_until_ready()
-    global brrtUsed
 
     while not bot.is_closed():
         try:
             with open(dataPath + 'stats.json', 'r+') as jsonFile:
                 data = json.load(jsonFile)
 
-                data['brrt'][0]['timesUsed'] = brrtUsed
-                data['cool'][0]['timesUsed'] = coolUsed
+                data = userDic
 
                 jsonFile.seek(0) #Set cursor to beginning
                 json.dump(data, jsonFile)
@@ -60,7 +70,6 @@ async def on_member_join(member):
 @bot.command()
 async def cool(ctx, name: str):
     """Decides if u cool"""
-    global coolUsed
     cool = False
 
     with open(dataPath + 'cool.txt', 'r') as f:
@@ -74,13 +83,11 @@ async def cool(ctx, name: str):
         await ctx.send('{} is cool'.format(name))
     else:
         await ctx.send('{} is not cool'.format(name))
-    coolUsed += 1
 
 @bot.command()
 async def brrt(ctx, name: str):
 
     if ctx.message.author.guild_permissions.administrator:
-        global brrtUsed
         member = None
 
         for user in ctx.guild.members:
@@ -94,7 +101,7 @@ async def brrt(ctx, name: str):
                 time.sleep(3)
                 for i in range(0, 20):
                     await ctx.send(member.mention)
-                brrtUsed += 1
+                addDict(str(ctx.message.author))
             else:
                 raise Exception
         except:
@@ -106,6 +113,11 @@ async def brrt(ctx, name: str):
 async def stats(ctx, member: discord.Member):
     """Says when a member joined."""
     await ctx.send('{0.name} joined in {0.joined_at}'.format(member))
+
+@bot.command()
+async def save(ctx):
+    await collectStats()
+    await ctx.send('stats saved')
 
 getData()
 bot.loop.create_task(collectStats())
