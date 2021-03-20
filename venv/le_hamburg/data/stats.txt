@@ -1,6 +1,0 @@
-Time: 1616215175 | Brrt Used: 0
-Time: 1616215295 | Brrt Used: 1
-Time: 1616215415 | Brrt Used: 1
-Time: 1616215535 | Brrt Used: 1
-Time: 1616215655 | Brrt Used: 1
-Time: 1616215775 | Brrt Used: 1

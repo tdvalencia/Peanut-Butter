@@ -7,18 +7,16 @@ intents = discord.Intents.default()
 intents.members = True
 
 bot = commands.Bot(command_prefix='#', description=description, intents=intents)
-token = ''
 
 dataPath = os.path.dirname(__file__) + '\\data\\'
 brrtUsed = 0
 
 def getToken():
-    global token
     with open(dataPath + 'token.txt', 'r') as f:
         token = f.readline()
     return token
 
-async def collectInfo():
+async def collectStats():
     await bot.wait_until_ready()
     global brrtUsed
 
@@ -87,9 +85,9 @@ async def brrt(ctx, name: str):
         await ctx.send('ur not cool enough')
 
 @bot.command()
-async def joined(ctx, member: discord.Member):
+async def stats(ctx, member: discord.Member):
     """Says when a member joined."""
     await ctx.send('{0.name} joined in {0.joined_at}'.format(member))
 
-bot.loop.create_task(collectInfo())
+bot.loop.create_task(collectStats())
 bot.run(getToken())
