@@ -7,9 +7,16 @@ intents = discord.Intents.default()
 intents.members = True
 
 bot = commands.Bot(command_prefix='#', description=description, intents=intents)
+token = ''
 
 dataPath = os.path.dirname(__file__) + '\\data\\'
 brrtUsed = 0
+
+def getToken():
+    global token
+    with open(dataPath + 'token.txt', 'r') as f:
+        token = f.readline()
+    return token
 
 async def collectInfo():
     await bot.wait_until_ready()
@@ -85,4 +92,4 @@ async def joined(ctx, member: discord.Member):
     await ctx.send('{0.name} joined in {0.joined_at}'.format(member))
 
 bot.loop.create_task(collectInfo())
-bot.run('ODAzNjc0NjE1NjM2Njg4OTE2.YBBOTw.TFlh5qyjBPjxRF33P2p-0wdG5WA')
+bot.run(getToken())
