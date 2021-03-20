@@ -1,6 +1,5 @@
-import discord, random, os, io
+import discord, time, os, io, json, asyncio
 from discord.ext import commands
-
 
 description = '''Yes the Hamburger has arrived'''
 
@@ -9,7 +8,21 @@ intents.members = True
 
 bot = commands.Bot(command_prefix='#', description=description, intents=intents)
 
-path = os.path.dirname(__file__) + '/'
+dataPath = os.path.dirname(__file__) + '\\data\\'
+brrtUsed = 0
+
+async def collectInfo():
+    await bot.wait_until_ready()
+    global brrtUsed
+
+    while not bot.is_closed():
+        try:
+            with open(dataPath + 'stats.txt', 'a') as f:
+                f.write(f'Time: {int(time.time())} | Brrt Used: {brrtUsed}\n')
+            await asyncio.sleep(120)
+        except Exception as e:
+            print(e)
+            await asyncio.sleep(120)
 
 @bot.event
 async def on_ready():
@@ -21,28 +34,20 @@ async def on_ready():
 @bot.event
 async def on_member_join(member):
     print('New member joined.')
-    
     channel = bot.get_channel(802197379146973214)
     await channel.send('The Hamburger welcomes you ' + member.mention)
 
 @bot.command()
-async def add(ctx, left: int, right: int):
-    """Adds two numbers together."""
-    await ctx.send(left + right)
-
-@bot.command(description='For when you wanna settle the score some other way')
-async def choose(ctx, *choices: str):
-    """Chooses between multiple choices."""
-    await ctx.send(random.choice(choices))
-
-@bot.command()
 async def cool(ctx, name: str):
     """Decides if u cool"""
-
     cool = False
 
-    with open(path + 'cool.txt', 'r') as f:
-        nameList = f.readline().split(',')
+    if name == None:
+        await ctx.send('Enter a string after the command. ex "#cool Tony"')
+
+    with open(dataPath + 'cool.txt', 'r') as f:
+        nameList = f.readline().replace(' ', '').split(',')
+        print(nameList)
 
     for names in nameList:
         if name.lower() == names:
@@ -57,6 +62,7 @@ async def cool(ctx, name: str):
 async def brrt(ctx, name: str):
 
     if ctx.message.author.guild_permissions.administrator:
+        global brrtUsed
         memeber = ''
 
         for user in ctx.guild.members:
@@ -65,8 +71,9 @@ async def brrt(ctx, name: str):
         
         try:
             await ctx.send('air strike in bound')
-            for i in range(0, 1):
+            for i in range(0, 20):
                 await ctx.send(memeber.mention)
+            brrtUsed += 1
         except:
             await ctx.send('user not found')
     else:
@@ -77,11 +84,5 @@ async def joined(ctx, member: discord.Member):
     """Says when a member joined."""
     await ctx.send('{0.name} joined in {0.joined_at}'.format(member))
 
-@bot.command()
-async def admin(ctx):
-    if ctx.message.author.guild_permissions.administrator:
-        await ctx.send('you are admin')
-    else:
-        await ctx.send('you are not admin')
-
+bot.loop.create_task(collectInfo())
 bot.run('ODAzNjc0NjE1NjM2Njg4OTE2.YBBOTw.TFlh5qyjBPjxRF33P2p-0wdG5WA')
