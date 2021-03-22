@@ -1,58 +1,15 @@
-import discord, time, os, io, json, asyncio
+import discord, os, time, json, random, wikipedia
 from discord.ext import commands
+import sauce, sponge
 
-description = '''Yes the Hamburger has arrived'''
+description = '''the hamburger has arrived. this is the main bot file.'''
 
 intents = discord.Intents.default()
 intents.members = True
 
 bot = commands.Bot(command_prefix='#', description=description, intents=intents)
 
-userDic = {}
 dataPath = os.path.dirname(__file__) + '\\data\\'
-
-def getData():
-    global userDic
-    with open(dataPath + 'stats.json', 'r') as f:
-        data = json.load(f)
-        userDic = data
-
-def getToken():
-    with open(dataPath + 'token.txt', 'r') as f:
-        token = f.readline()
-    return token
-
-def addDict(user: str):
-    global userDic
-    inside = False
-
-    for key in userDic.keys():
-        if key == user:
-            inside = True
-
-    if inside:
-        userDic.update({user: userDic.get(user) + 1})
-    else:
-        userDic[user] = 1
-
-async def collectStats():
-    await bot.wait_until_ready()
-
-    while not bot.is_closed():
-        try:
-            with open(dataPath + 'stats.json', 'r+') as jsonFile:
-                data = json.load(jsonFile)
-
-                data = userDic
-
-                jsonFile.seek(0) #Set cursor to beginning
-                json.dump(data, jsonFile)
-                jsonFile.truncate() #deals with case if new data is smaller than prev
-
-            await asyncio.sleep(120)
-        except Exception as e:
-            print(e)
-            await asyncio.sleep(120)
 
 @bot.event
 async def on_ready():
@@ -60,65 +17,101 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+    activity = discord.Game(name="hjonks")
+    await bot.change_presence(status=discord.Status.online, activity=activity)
 
 @bot.event
-async def on_member_join(member):
-    print('New member joined.')
-    channel = bot.get_channel(802197379146973214)
-    await channel.send('The Hamburger welcomes you ' + member.mention)
+async def on_message(message):
+    '''collects info on who sends messages'''
 
-@bot.command()
-async def cool(ctx, name: str):
-    """Decides if u cool"""
-    cool = False
-
-    with open(dataPath + 'cool.txt', 'r') as f:
-        nameList = f.readline().replace(' ', '').split(',')
-
-    for names in nameList:
-        if name.lower() == names:
-            cool = True
-            
-    if cool == True:
-        await ctx.send('{} is cool'.format(name))
+    if message.embeds:
+        return
     else:
-        await ctx.send('{} is not cool'.format(name))
+        guild = message.guild.name
+        if sauce.checkJson('guilds.json', guild):
+            data = f'{int(time.time())} {message.channel} {message.author}: {message.content}'
+            try:
+                sponge.logMessages(message.guild.name, data)
+                sponge.updateServer('guilds.json', message.author.name, guild)
+            except Exception as e:
+                print(e)
+            print(data)
+        else:
+            sponge.guildBuild(message.guild.name)
+        await bot.process_commands(message)
 
 @bot.command()
-async def brrt(ctx, name: str):
+async def clear(ctx, number:int=10):
+    '''clears messages'''
+    await ctx.channel.purge(limit=number+1)
 
-    if ctx.message.author.guild_permissions.administrator:
-        member = None
+@bot.command()
+async def brrt(ctx, name: str, message:str=''):
+    '''strikes target with mentions'''
+    target = sauce.checkList(ctx.guild.members, name)
 
-        for user in ctx.guild.members:
-            if name == user.name:
-                member = user
-        
+    if sauce.checkText('readText/brrt.txt', ctx.author.name):
         try:
             await ctx.message.delete()
-            if member != None:
+            if target != None:
                 await ctx.send('airstrike inbound')
                 time.sleep(3)
                 for i in range(0, 20):
-                    await ctx.send(member.mention)
-                addDict(str(ctx.message.author))
+                    await ctx.send(f'{target.mention} {message}')
             else:
                 raise Exception
-        except:
+        except Exception as e:
+            print(e)
             await ctx.send('target not found')
     else:
-        await ctx.send('u do not have airstrike capabilities')
+        await ctx.send('ur kinda cringe')
 
 @bot.command()
-async def stats(ctx, member: discord.Member):
-    """Says when a member joined."""
-    await ctx.send('{0.name} joined in {0.joined_at}'.format(member))
+async def cool(ctx, name: str):
+    '''Decides if u cool'''
+
+    num = random.randint(1,3)
+
+    try:
+        await ctx.message.delete()
+
+        if sauce.checkText('readText/cool.txt', name):
+            switcher = {
+                1: f'{name} is cool',
+                2: f'{name} is swag',
+                3: f'{name} is pog'
+            }
+            await ctx.send(switcher.get(num, 'error'))
+        else:
+            switcher = {
+                1: f'{name} is not cool',
+                2: f'{name} is not swag',
+                3: f'{name} is unpoggie'
+            }
+            await ctx.send(switcher.get(num, 'error'))
+    except Exception as e:
+        print(e)
 
 @bot.command()
-async def save(ctx):
-    await collectStats()
-    await ctx.send('stats saved')
+async def wiki(ctx, query: str):
+    try:
 
-getData()
-bot.loop.create_task(collectStats())
-bot.run(getToken())
+        if 'rand' in ctx.message.content:
+            r = wikipedia.random(1)
+            page = wikipedia.page(r)
+            summary = wikipedia.summary(r, sentences=5)
+        else:
+            search = wikipedia.search(query, results=1)
+            page = wikipedia.page(search[0])
+            summary = wikipedia.summary(search[0], sentences=5)
+
+        n = random.randrange(int(len(page.images)))    
+        embed = discord.Embed(title=page.title, url=page.url, description=summary)
+        embed.set_image(url=page.images[n])
+        await ctx.send(embed=embed)
+    except Exception as e:
+        print(e)
+        embed = discord.Embed(title='Error', description=str(e))
+        await ctx.send(embed=embed)
+
+bot.run(sauce.getToken())

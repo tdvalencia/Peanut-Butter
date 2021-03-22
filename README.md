@@ -1,2 +1,3 @@
 # Peanut Butter
- A Discord bot.
+
+A fun Discord bot.
