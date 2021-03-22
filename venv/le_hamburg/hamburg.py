@@ -37,7 +37,7 @@ async def on_message(message):
                 print(e)
             print(data)
         else:
-            sponge.guildBuild(message.guild.name)
+            sponge.guildBuild(message.guild.name, message.author.name)
         await bot.process_commands(message)
 
 @bot.command()
@@ -50,14 +50,25 @@ async def brrt(ctx, name: str, message:str=''):
     '''strikes target with mentions'''
     target = sauce.checkList(ctx.guild.members, name)
 
+    switcher = {
+        1: 'airstrike',
+        2: 'enemy ac-130 above',
+        3: 'enemy bogey in airspace',
+        4: 'this is not a drill',
+        5: '*alarm noises*'
+    }
+
+    r = int(random.randrange(5))
+
     if sauce.checkText('readText/brrt.txt', ctx.author.name):
         try:
             await ctx.message.delete()
             if target != None:
-                await ctx.send('airstrike inbound')
+                await ctx.send(switcher[r])
                 time.sleep(3)
                 for i in range(0, 20):
                     await ctx.send(f'{target.mention} {message}')
+                    time.sleep(1)
             else:
                 raise Exception
         except Exception as e:
@@ -70,7 +81,7 @@ async def brrt(ctx, name: str, message:str=''):
 async def cool(ctx, name: str):
     '''Decides if u cool'''
 
-    num = random.randint(1,3)
+    num = random.randrange(3)
 
     try:
         await ctx.message.delete()

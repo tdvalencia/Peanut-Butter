@@ -8,8 +8,6 @@ The main goal of the project is to make a bot that is fun to play around with.
   * use `#cool "discord_username"` (not server nickname)
 * run Wikipedia searches
   * use `#wiki "keyword/topic"`
-* google translate capabilities
-  * use `#translate lang_abbrv "phrase"`
 * clear to clean the discord chat of unwanted chats
   * use `#clear value` where `value` is number of chats to clear. Default is 10
 
