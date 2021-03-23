@@ -7,3 +7,4 @@ pyNaCl
 certifi
 idna
 pycparser
+hyperframe, hpack, sniffio, h2, h11, rfc3986, httpcore, hstspreload, httpx, googletrans

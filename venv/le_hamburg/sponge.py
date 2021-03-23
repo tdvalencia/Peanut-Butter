@@ -26,6 +26,7 @@ def updateServer(file:str, user:str, server: str):
         if sauce.checkServer(file, user, server):
             content[server][user] += 1
         else:
+            content[server] = {}
             content[server][user] = 1
 
         jsonFile.seek(0)
@@ -46,10 +47,10 @@ def newServer(file: str, server: str):
         jsonFile.truncate()
 
 def logMessages(guildName: str, logs: str):
-    with open(guildLogs + f'{guildName}.txt', 'a', encoding='utf-8') as f:
+    with open(guildLogs + f'{guildName}.log', 'a', encoding='utf-8') as f:
         f.write(logs + '\n')
 
-def guildBuild(guildName: str, user: str):
+def guildBuildLog(guildName: str, user: str):
     with open(guildLogs + f'{guildName}.txt', 'w', encoding='utf-8') as f:
         f.write(f'Start of {guildName}\'s chat logs \n')
 

@@ -26,10 +26,10 @@ def checkServer(file: str, query: str, server: str):
 
 def checkText(file: str, query: str):
     with open(dataPath + file, 'r', encoding='utf-8') as f:
-        fileList = f.readline().replace(' ', '').split(',')
+        fileList = f.readlines()
 
     for q in fileList:
-        if query.lower() == q:
+        if query.lower() == q.strip():
             return True
     return False
 

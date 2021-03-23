@@ -1,4 +1,5 @@
-import discord, os, time, json, random, wikipedia
+import os, time, json, random, requests
+import discord, wikipedia
 from discord.ext import commands
 import sauce, sponge
 
@@ -8,8 +9,6 @@ intents = discord.Intents.default()
 intents.members = True
 
 bot = commands.Bot(command_prefix='#', description=description, intents=intents)
-
-dataPath = os.path.dirname(__file__) + '\\data\\'
 
 @bot.event
 async def on_ready():
@@ -24,21 +23,40 @@ async def on_ready():
 async def on_message(message):
     '''collects info on who sends messages'''
 
-    if message.embeds:
+    guild = message.guild.name
+    data = f'{int(time.time())} {message.channel} {message.author}: {message.content}'
+
+    if message.author == bot.user:
+        print(data)
         return
     else:
-        guild = message.guild.name
+        print(data)
         if sauce.checkJson('guilds.json', guild):
-            data = f'{int(time.time())} {message.channel} {message.author}: {message.content}'
             try:
                 sponge.logMessages(message.guild.name, data)
                 sponge.updateServer('guilds.json', message.author.name, guild)
             except Exception as e:
                 print(e)
-            print(data)
         else:
-            sponge.guildBuild(message.guild.name, message.author.name)
+            sponge.guildBuildLog(message.guild.name, message.author.name)
         await bot.process_commands(message)
+
+@bot.listen()
+async def on_message(message):
+    if message.author != bot.user:
+        guild = message.guild.name
+        parse = message.content.split(' ')
+        containsBad = None
+        uri = 'https://media.giphy.com/media/TKGMv1ukCJWwvYsXse/giphy.gif'
+
+        for word in parse:
+            if sauce.checkText('readText/bad-words.txt', word):
+                containsBad = True
+
+        if containsBad:
+            sponge.updateServer('badword.json', message.author.name, guild)
+            # await message.channel.send('this bitch bouta get smoked for saying a no-no word')
+            # await message.channel.send(uri)
 
 @bot.command()
 async def clear(ctx, number:int=10):
@@ -46,34 +64,53 @@ async def clear(ctx, number:int=10):
     await ctx.channel.purge(limit=number+1)
 
 @bot.command()
-async def brrt(ctx, name: str, message:str=''):
+async def brrt(ctx, member: discord.Member, message:str='', dm:str=''):
     '''strikes target with mentions'''
-    target = sauce.checkList(ctx.guild.members, name)
+    # target = sauce.checkList(ctx.guild.members, name)
+    target = member
+
+    print(target)
 
     switcher = {
-        1: 'airstrike',
-        2: 'enemy ac-130 above',
-        3: 'enemy bogey in airspace',
-        4: 'this is not a drill',
-        5: '*alarm noises*'
+        0: 'airstrike inbound',
+        1: 'enemy ac-130 above',
+        2: 'enemy bogey in airspace',
+        3: 'this is not a drill',
+        4: '*alarm noises*'
     }
 
     r = int(random.randrange(5))
 
     if sauce.checkText('readText/brrt.txt', ctx.author.name):
-        try:
-            await ctx.message.delete()
-            if target != None:
-                await ctx.send(switcher[r])
-                time.sleep(3)
-                for i in range(0, 20):
-                    await ctx.send(f'{target.mention} {message}')
-                    time.sleep(1)
-            else:
-                raise Exception
-        except Exception as e:
-            print(e)
-            await ctx.send('target not found')
+        if dm == '':
+            try:
+                await ctx.message.delete()
+                if target != None:
+                    await ctx.send(switcher[r])
+                    time.sleep(3)
+                    for i in range(0, 20):
+                        await ctx.send(f'<@{target.id}> {message}')
+                        time.sleep(1)
+                else:
+                    raise Exception
+            except Exception as e:
+                print(e)
+                await ctx.send('target not found')
+        else:
+            try:
+                await ctx.message.delete()
+                if target != None:
+                    await target.send(switcher[r])
+                    time.sleep(5)
+                    for i in range(0, 20):
+                        await target.send(message)
+                        time.sleep(1)
+                    await ctx.author.send('Target hit')
+                else:
+                    raise Exception
+            except Exception as e:
+                print(e)
+                await ctx.send('target not found')
     else:
         await ctx.send('ur kinda cringe')
 
@@ -88,16 +125,16 @@ async def cool(ctx, name: str):
 
         if sauce.checkText('readText/cool.txt', name):
             switcher = {
-                1: f'{name} is cool',
-                2: f'{name} is swag',
-                3: f'{name} is pog'
+                0: f'{name} is cool',
+                1: f'{name} is swag',
+                2: f'{name} is pog'
             }
             await ctx.send(switcher.get(num, 'error'))
         else:
             switcher = {
-                1: f'{name} is not cool',
-                2: f'{name} is not swag',
-                3: f'{name} is unpoggie'
+                0: f'{name} is not cool',
+                1: f'{name} is not swag',
+                2: f'{name} is unpoggie'
             }
             await ctx.send(switcher.get(num, 'error'))
     except Exception as e:
