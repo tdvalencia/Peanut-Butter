@@ -48,23 +48,6 @@ async def on_message(message):
             sponge.guildBuildLog(message.guild.name, message.author.name)
         await bot.process_commands(message)
 
-@bot.listen()
-async def on_message(message):
-    if message.author != bot.user:
-        guild = message.guild.name
-        parse = message.content.split(' ')
-        containsBad = None
-        uri = 'https://media.giphy.com/media/TKGMv1ukCJWwvYsXse/giphy.gif'
-
-        for word in parse:
-            if sauce.checkText('readText/bad-words.txt', word):
-                containsBad = True
-
-        if containsBad:
-            sponge.updateServer('badword.json', message.author.name, guild)
-            # await message.channel.send('this bitch bouta get smoked for saying a no-no word')
-            # await message.channel.send(uri)
-
 @bot.command()
 async def clear(ctx, number:int=10):
     '''clears messages'''

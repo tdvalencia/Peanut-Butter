@@ -1,6 +1,6 @@
 import os, json
 import matplotlib.pyplot as plt
-import discord
+import discord, sauce, sponge
 from discord.ext import commands
 
 class Badword(commands.Cog):
@@ -14,6 +14,23 @@ class Badword(commands.Cog):
         await ctx.message.delete()
         self.graph(ctx.guild.name)
         await ctx.send(file=discord.File(self.dataPath + 'chart.png'))
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author != self.bot.user:
+            guild = message.guild.name
+            parse = message.content.split(' ')
+            containsBad = None
+            uri = 'https://media.giphy.com/media/TKGMv1ukCJWwvYsXse/giphy.gif'
+
+            for word in parse:
+                if sauce.checkText('readText/bad-words.txt', word):
+                    containsBad = True
+
+            if containsBad:
+                sponge.updateServer('badword.json', message.author.name, guild)
+                # await message.channel.send('this bitch bouta get smoked for saying a no-no word')
+                # await message.channel.send(uri)
 
     def graph(self, server:str):
         height = []
