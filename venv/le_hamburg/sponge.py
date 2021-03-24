@@ -19,18 +19,18 @@ def updateJson(file: str, user: str):
         json.dump(content, jsonFile, indent=4)
         jsonFile.truncate()
 
-def updateServer(file:str, user:str, server: str):
+def updateServer(file:str, user:str, server: str, num: int=1):
     with open(dataPath + file, 'r+', encoding='utf-8') as jsonFile:
         content = json.load(jsonFile)
 
         try:
             if sauce.checkServer(file, user, server):
-                content[server][user] += 1
+                content[server][user] += num
             else:
-                content[server][user] = 1
+                content[server][user] = num
         except:
             content[server] = {}
-            content[server][user] = 1
+            content[server][user] = num
 
         jsonFile.seek(0)
         json.dump(content, jsonFile, indent=4)

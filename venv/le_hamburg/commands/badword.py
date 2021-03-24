@@ -14,9 +14,13 @@ class Badword(commands.Cog):
         await ctx.message.delete()
         self.graph(ctx.guild.name)
         await ctx.send(file=discord.File(self.dataPath + 'chart.png'))
+        os.remove(self.dataPath + 'chart.png')
 
     @commands.Cog.listener()
     async def on_message(self, message):
+        
+        arr = []
+
         if message.author != self.bot.user:
             guild = message.guild.name
             parse = message.content.split(' ')
@@ -25,10 +29,11 @@ class Badword(commands.Cog):
 
             for word in parse:
                 if sauce.checkText('readText/bad-words.txt', word):
+                    arr.append(word)
                     containsBad = True
 
             if containsBad:
-                sponge.updateServer('badword.json', message.author.name, guild)
+                sponge.updateServer('badword.json', message.author.name, guild, len(arr))
                 # await message.channel.send('this bitch bouta get smoked for saying a no-no word')
                 # await message.channel.send(uri)
 
@@ -58,3 +63,4 @@ class Badword(commands.Cog):
         plt.tight_layout()
 
         plt.savefig(self.dataPath + 'chart.png')
+        plt.close()
