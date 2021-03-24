@@ -1,14 +1,21 @@
-import os, time, json, random, requests
+import os, time, json, random, requests, io
 import discord, wikipedia
 from discord.ext import commands
 import sauce, sponge
+from commands import greetings, badword, wikiSearch
 
 description = '''the hamburger has arrived. this is the main bot file.'''
 
 intents = discord.Intents.default()
 intents.members = True
 
+dataPath = os.path.dirname(__file__) + '/data/'
+
 bot = commands.Bot(command_prefix='#', description=description, intents=intents)
+
+bot.add_cog(greetings.Greetings(bot))
+bot.add_cog(badword.Badword(bot, dataPath))
+bot.add_cog(wikiSearch.WikiSearch(bot))
 
 @bot.event
 async def on_ready():
@@ -23,7 +30,6 @@ async def on_ready():
 async def on_message(message):
     '''collects info on who sends messages'''
 
-    guild = message.guild.name
     data = f'{int(time.time())} {message.channel} {message.author}: {message.content}'
 
     if message.author == bot.user:
@@ -31,6 +37,7 @@ async def on_message(message):
         return
     else:
         print(data)
+        guild = message.guild.name
         if sauce.checkJson('guilds.json', guild):
             try:
                 sponge.logMessages(message.guild.name, data)
@@ -139,27 +146,5 @@ async def cool(ctx, name: str):
             await ctx.send(switcher.get(num, 'error'))
     except Exception as e:
         print(e)
-
-@bot.command()
-async def wiki(ctx, query: str):
-    try:
-
-        if 'rand' in ctx.message.content:
-            r = wikipedia.random(1)
-            page = wikipedia.page(r)
-            summary = wikipedia.summary(r, sentences=5)
-        else:
-            search = wikipedia.search(query, results=1)
-            page = wikipedia.page(search[0])
-            summary = wikipedia.summary(search[0], sentences=5)
-
-        n = random.randrange(int(len(page.images)))    
-        embed = discord.Embed(title=page.title, url=page.url, description=summary)
-        embed.set_image(url=page.images[n])
-        await ctx.send(embed=embed)
-    except Exception as e:
-        print(e)
-        embed = discord.Embed(title='Error', description=str(e))
-        await ctx.send(embed=embed)
 
 bot.run(sauce.getToken())

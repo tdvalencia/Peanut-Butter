@@ -1,10 +1,3 @@
-import msvcrt
-
-num = 0
-done = False
-
-async def 
-while not done:
-    if msvcrt.kbhit():
-        t = msvcrt.getche()
-        msvcrt.putch(t)
+from pathlib import Path
+path = Path("/here/your/path/file.txt")
+print(path.parent.absolute())

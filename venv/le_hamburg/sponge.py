@@ -23,9 +23,12 @@ def updateServer(file:str, user:str, server: str):
     with open(dataPath + file, 'r+', encoding='utf-8') as jsonFile:
         content = json.load(jsonFile)
 
-        if sauce.checkServer(file, user, server):
-            content[server][user] += 1
-        else:
+        try:
+            if sauce.checkServer(file, user, server):
+                content[server][user] += 1
+            else:
+                content[server][user] = 1
+        except:
             content[server] = {}
             content[server][user] = 1
 
@@ -51,7 +54,7 @@ def logMessages(guildName: str, logs: str):
         f.write(logs + '\n')
 
 def guildBuildLog(guildName: str, user: str):
-    with open(guildLogs + f'{guildName}.txt', 'w', encoding='utf-8') as f:
-        f.write(f'Start of {guildName}\'s chat logs \n')
+    with open(guildLogs + f'{guildName}.log', 'w', encoding='utf-8') as f:
+        f.write(f'Start of {guildName}\'s chat log \n')
 
     updateServer('guilds.json', user, guildName)
