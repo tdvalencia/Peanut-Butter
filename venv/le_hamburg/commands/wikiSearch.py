@@ -7,6 +7,7 @@ class WikiSearch(commands.Cog):
 
     @commands.command()
     async def wiki(self, ctx, query: str):
+        '''a janky way of searching wikipedia. not too reliable'''
         try:
             if 'rand' in ctx.message.content:
                 r = wikipedia.random(1)

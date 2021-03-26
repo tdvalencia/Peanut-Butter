@@ -1,5 +1,5 @@
 import os, json, time
-import sauce
+from le_hamburg import sauce
 
 '''this is the data handler with functions that directs flow to files'''
 
@@ -54,7 +54,10 @@ def logMessages(guildName: str, logs: str):
         f.write(logs + '\n')
 
 def guildBuildLog(guildName: str, user: str):
+
+
     with open(guildLogs + f'{guildName}.log', 'w', encoding='utf-8') as f:
         f.write(f'Start of {guildName}\'s chat log \n')
 
     updateServer('guilds.json', user, guildName)
+

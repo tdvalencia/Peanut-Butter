@@ -2,20 +2,27 @@ import os, time, json, random, requests, io
 import discord, wikipedia
 from discord.ext import commands
 import sauce, sponge
-from commands import greetings, badword, wikiSearch
+from commands import badword, wikiSearch, kenobi, bee, brrt
 
-description = '''the hamburger has arrived. this is the main bot file.'''
+description = '''hamburgers are cool'''
 
 intents = discord.Intents.default()
 intents.members = True
 
 dataPath = os.path.dirname(__file__) + '/data/'
 
-bot = commands.Bot(command_prefix='#', description=description, intents=intents)
+bot = commands.Bot(
+    command_prefix='#', 
+    description=description, 
+    intents=intents,
+    help_command=commands.DefaultHelpCommand(no_category='Basic')
+)
 
-bot.add_cog(greetings.Greetings(bot))
 bot.add_cog(badword.Badword(bot, dataPath))
 bot.add_cog(wikiSearch.WikiSearch(bot))
+bot.add_cog(kenobi.Kenobi(bot))
+bot.add_cog(bee.BeeMovie(bot, dataPath))
+bot.add_cog(brrt.Brrt(bot, dataPath))
 
 @bot.event
 async def on_ready():
@@ -25,6 +32,13 @@ async def on_ready():
     print('------')
     activity = discord.Game(name="hjonks")
     await bot.change_presence(status=discord.Status.online, activity=activity)
+
+@bot.event
+async def on_guild_join(guild):
+    for channel in guild.text_channels:
+        if channel.permissions_for(guild.me).send_messages:
+            await channel.send('Hello. My command prefix is `#`. Use `#help` for a list of commands.')
+        break
 
 @bot.event
 async def on_message(message):
@@ -52,57 +66,6 @@ async def on_message(message):
 async def clear(ctx, number:int=10):
     '''clears messages'''
     await ctx.channel.purge(limit=number+1)
-
-@bot.command()
-async def brrt(ctx, member: discord.Member, message:str='', dm:str=''):
-    '''strikes target with mentions'''
-    # target = sauce.checkList(ctx.guild.members, name)
-    target = member
-
-    print(target)
-
-    switcher = {
-        0: 'airstrike inbound',
-        1: 'enemy ac-130 above',
-        2: 'enemy bogey in airspace',
-        3: 'this is not a drill',
-        4: '*alarm noises*'
-    }
-
-    r = int(random.randrange(5))
-
-    if sauce.checkText('readText/brrt.txt', ctx.author.name):
-        if dm == '':
-            try:
-                await ctx.message.delete()
-                if target != None:
-                    await ctx.send(switcher[r])
-                    time.sleep(3)
-                    for i in range(0, 20):
-                        await ctx.send(f'<@{target.id}> {message}')
-                        time.sleep(1)
-                else:
-                    raise Exception
-            except Exception as e:
-                print(e)
-                await ctx.send('target not found')
-        else:
-            try:
-                await ctx.message.delete()
-                if target != None:
-                    await target.send(switcher[r])
-                    time.sleep(5)
-                    for i in range(0, 20):
-                        await target.send(message)
-                        time.sleep(1)
-                    await ctx.author.send('Target hit')
-                else:
-                    raise Exception
-            except Exception as e:
-                print(e)
-                await ctx.send('target not found')
-    else:
-        await ctx.send('ur kinda cringe')
 
 @bot.command()
 async def cool(ctx, name: str):

@@ -1,3 +1,8 @@
-from pathlib import Path
-path = Path("/here/your/path/file.txt")
-print(path.parent.absolute())
+def test(*args):
+    for arg in args:
+        if (type(arg) == int):
+            print('int')
+        elif (type(arg) == str):
+            print('str')
+
+test(1, 'c', 3)

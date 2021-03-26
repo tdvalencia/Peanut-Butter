@@ -1,7 +1,8 @@
 import os, json
 import matplotlib.pyplot as plt
-import discord, sauce, sponge
+import discord
 from discord.ext import commands
+from le_hamburg import sauce, sponge
 
 class Badword(commands.Cog):
 
@@ -11,6 +12,8 @@ class Badword(commands.Cog):
 
     @commands.command()
     async def curseIndex(self, ctx):
+        '''creates chart with server curse count'''
+
         await ctx.message.delete()
         self.graph(ctx.guild.name)
         await ctx.send(file=discord.File(self.dataPath + 'chart.png'))
@@ -64,3 +67,4 @@ class Badword(commands.Cog):
 
         plt.savefig(self.dataPath + 'chart.png')
         plt.close()
+
