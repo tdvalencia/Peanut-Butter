@@ -1,4 +1,5 @@
 import discord
+from le_hamburg import sauce
 
 #############################################################################################################################
 # USAGE:                                                                                                                    #
@@ -21,4 +22,4 @@ pfp = fp.read()
 async def on_ready():
     await client.user.edit(avatar=pfp)
     
-client.run(token)
+client.run(sauce.getToken())

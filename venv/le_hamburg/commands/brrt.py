@@ -12,7 +12,7 @@ class Brrt(commands.Cog):
         '''strike a target with notifications'''
 
         num = 5 
-        message = None
+        message = ''
         dm = False
 
         for arg in args:

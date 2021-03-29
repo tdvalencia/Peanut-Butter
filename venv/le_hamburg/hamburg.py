@@ -108,9 +108,5 @@ async def test(ctx):
     else:
         await ctx.send("You said no!")
 
-# @bot.command()
-# async def bjack(ctx):
-#     user = ctx.author
-    
 
 bot.run(sauce.getToken())

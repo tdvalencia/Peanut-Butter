@@ -28,7 +28,7 @@ def updateServer(file:str, user:str, server: str, num: int=1):
                 content[server][user] += num
             else:
                 content[server][user] = num
-        except:
+        except Exception as e:
             content[server] = {}
             content[server][user] = num
 

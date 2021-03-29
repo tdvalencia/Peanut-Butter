@@ -19,6 +19,8 @@ class Blackjack(commands.Cog):
     async def bjack(self, ctx):
         '''play blackjack against Peanut Butter'''
 
+        await ctx.message.delete()
+
         if not self.active:
             self.active = True
 
