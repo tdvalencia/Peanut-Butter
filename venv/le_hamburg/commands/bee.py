@@ -25,7 +25,7 @@ class BeeMovie(commands.Cog):
                     containsBee = True
 
             if containsBee:
-                sponge.updateServer('beeMovie.json', message.author.name, guild, 1)
+                sponge.updateServer('beeMovie.json', str(message.author), guild, 1)
                 # await message.channel.send('you are plagiarizing the bee movie')
 
     @commands.command()

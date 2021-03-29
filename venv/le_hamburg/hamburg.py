@@ -3,6 +3,9 @@ import discord, wikipedia
 from discord.ext import commands
 import sauce, sponge
 from commands import badword, wikiSearch, kenobi, bee, brrt
+from Blackjack import card
+from Blackjack import blackjack
+from Bank import bank
 
 description = '''hamburgers are cool'''
 
@@ -23,6 +26,8 @@ bot.add_cog(wikiSearch.WikiSearch(bot))
 bot.add_cog(kenobi.Kenobi(bot))
 bot.add_cog(bee.BeeMovie(bot, dataPath))
 bot.add_cog(brrt.Brrt(bot, dataPath))
+bot.add_cog(blackjack.Blackjack(bot))
+bot.add_cog(bank.Bank(bot))
 
 @bot.event
 async def on_ready():
@@ -55,7 +60,7 @@ async def on_message(message):
         if sauce.checkJson('guilds.json', guild):
             try:
                 sponge.logMessages(message.guild.name, data)
-                sponge.updateServer('guilds.json', message.author.name, guild)
+                sponge.updateServer('guilds.json', str(message.author), guild)
             except Exception as e:
                 print(e)
         else:
@@ -92,5 +97,20 @@ async def cool(ctx, name: str):
             await ctx.send(switcher.get(num, 'error'))
     except Exception as e:
         print(e)
+
+@bot.command()
+async def test(ctx):
+    await ctx.send('test')
+
+    msg = await bot.wait_for('message')
+    if msg.content.lower() == "y":
+        await ctx.send("You said yes!")
+    else:
+        await ctx.send("You said no!")
+
+# @bot.command()
+# async def bjack(ctx):
+#     user = ctx.author
+    
 
 bot.run(sauce.getToken())

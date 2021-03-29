@@ -36,7 +36,7 @@ class Badword(commands.Cog):
                     containsBad = True
 
             if containsBad:
-                sponge.updateServer('badword.json', message.author.name, guild, len(arr))
+                sponge.updateServer('badword.json', str(message.author), guild, len(arr))
                 # await message.channel.send('this bitch bouta get smoked for saying a no-no word')
                 # await message.channel.send(uri)
 
