@@ -2,7 +2,7 @@ import os, json
 import matplotlib.pyplot as plt
 import discord
 from discord.ext import commands
-from le_hamburg import sauce, sponge
+import sauce, sponge
 
 class Badword(commands.Cog):
 
@@ -53,18 +53,28 @@ class Badword(commands.Cog):
         for keys in data[server].keys():
             left.append(keys)
 
-        # naming the x-axis
         plt.xlabel('cursers')
-        # naming the y-axis
         plt.ylabel('curses')
-        # plot title
         plt.title('these mfs curse too much')
 
         plt.bar(left, height, width=0.5, color = ['#ff8b00', '#3399ff'])
 
-        plt.xticks(rotation=20, fontsize=9)
+        plt.xticks(rotation=90, fontsize=9)
         plt.tight_layout()
 
         plt.savefig(self.dataPath + 'chart.png')
         plt.close()
+
+    def pieChart(self, server:str):
+        
+        stats = []
+        total = 0
+
+        with open(self.dataPath + 'badword.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        for names in data[server]:
+            total += data[server][names]
+        print(stats)
+        print(total)
 

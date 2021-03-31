@@ -1,6 +1,6 @@
 import discord, json
 from discord.ext import commands
-from le_hamburg import sauce, sponge
+import sponge, sauce
 
 class BeeMovie(commands.Cog):
     def __init__(self, bot, dataPath):

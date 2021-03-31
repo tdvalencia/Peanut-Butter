@@ -1,6 +1,6 @@
 import discord, random, time
 from discord.ext import commands
-from le_hamburg import sponge, sauce
+import sponge, sauce
 
 class Brrt(commands.Cog):
     def __init__(self, bot, dataPath):
@@ -43,6 +43,14 @@ class Brrt(commands.Cog):
             4: 'confirmed. strike was successful'
         }
 
+        no = {
+            0: 'no',
+            1: 'ur cringe',
+            2: 'nope',
+            3: 'why',
+            4: 'u dont know the secret passcode'
+        }
+
         if sauce.checkText('readText/brrt.txt', ctx.author.name):
             if not dm:
                 try:
@@ -54,6 +62,7 @@ class Brrt(commands.Cog):
                         for i in range(0, num):
                             await ctx.send(f'{target.mention} {message}')
                             time.sleep(1)
+                        await ctx.author.send(confirm[random.randrange(5)])
                     else:
                         raise Exception
                 except Exception as e:
@@ -76,4 +85,4 @@ class Brrt(commands.Cog):
                     print(e)
                     await ctx.send('target not found')
         else:
-            await ctx.send('no')
+            await ctx.send(no[random.randrange(5)])

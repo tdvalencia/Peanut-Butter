@@ -1,8 +1,8 @@
 import os, time, json, random, requests, io
 import discord, wikipedia
-from discord.ext import commands
 import sauce, sponge
-from commands import badword, wikiSearch, kenobi, bee, brrt
+from discord.ext import commands
+from singleComm import badword, wikiSearch, kenobi, bee, brrt
 from Blackjack import card
 from Blackjack import blackjack
 from Bank import bank

@@ -1,5 +1,5 @@
 import os, json, time
-from le_hamburg import sauce
+import sauce
 
 '''this is the data handler with functions that directs flow to files'''
 
