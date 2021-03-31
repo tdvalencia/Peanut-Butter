@@ -35,14 +35,14 @@ class BeeMovie(commands.Cog):
         await ctx.message.delete()
 
         server = ctx.guild.name
-        user = ctx.message.author.name
+        user = str(ctx.message.author)
 
         with open(self.dataPath + 'beeMovie.json', 'r', encoding='utf-8') as f:
             data = json.load(f)
 
         userData = data[server][user]
         try:
-            await ctx.send(f'You have used word from the bee movie ' + str(userData) + ' times.')
+            await ctx.send(f'You have used words from the bee movie ' + str(userData) + ' times.')
         except Exception as e:
             await ctx.send(f'You have not used words from the bee movie yet.')
 
