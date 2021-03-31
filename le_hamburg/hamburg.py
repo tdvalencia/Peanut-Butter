@@ -98,15 +98,4 @@ async def cool(ctx, name: str):
     except Exception as e:
         print(e)
 
-@bot.command()
-async def test(ctx):
-    await ctx.send('test')
-
-    msg = await bot.wait_for('message')
-    if msg.content.lower() == "y":
-        await ctx.send("You said yes!")
-    else:
-        await ctx.send("You said no!")
-
-
 bot.run(sauce.getToken())
