@@ -1,6 +1,7 @@
 import os, time, json, random, requests, io
 import discord, wikipedia
 import sauce, sponge
+from datetime import datetime
 from discord.ext import commands
 from singleComm import badword, wikiSearch, kenobi, bee, brrt
 from Blackjack import card
@@ -34,7 +35,7 @@ async def on_ready():
     print('Logged in as')
     print(bot.user.name)
     print(bot.user.id)
-    print('------')
+    print('---------------')
     activity = discord.Game(name="hjonks")
     await bot.change_presence(status=discord.Status.online, activity=activity)
 
@@ -49,7 +50,9 @@ async def on_guild_join(guild):
 async def on_message(message):
     '''collects info on who sends messages'''
 
-    data = f'{int(time.time())} {message.channel} {message.author}: {message.content}'
+    date = datetime.today().strftime('%Y-%m-%d-%H:%M:%S')
+
+    data = f'{date} {message.channel} {message.author}: {message.content}'
 
     if message.author == bot.user:
         print(data)
