@@ -1,4 +1,5 @@
 venv/*
 archive/*
 le_hamburg/data/*
+le_hamburg/tools/*
 *.bat
