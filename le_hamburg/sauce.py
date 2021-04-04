@@ -3,7 +3,7 @@ import sponge
 
 '''this contains helpful functions for the bot and data handler to read and parse information'''
 
-dataPath = os.path.dirname(__file__) + '\\data\\'
+dataPath = os.path.dirname(__file__) + '/data/'
 
 def checkJson(file: str, query: str):
     with open(dataPath + file, 'r', encoding='utf-8') as f:

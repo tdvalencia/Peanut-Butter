@@ -1,6 +1,8 @@
 venv/*
+peanutb/*
 archive/*
 le_hamburg/data/*
 le_hamburg/tools/*
 *.bat
 *.sh
+*.pyc
