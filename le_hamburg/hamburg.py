@@ -32,10 +32,10 @@ bot.add_cog(bank.Bank(bot))
 
 @bot.event
 async def on_ready():
-    print('Logged in as')
+    print('\nLogged in as')
     print(bot.user.name)
     print(bot.user.id)
-    print('---------------')
+    print('---------------\n')
     activity = discord.Game(name="hjonks")
     await bot.change_presence(status=discord.Status.online, activity=activity)
 
@@ -54,21 +54,25 @@ async def on_message(message):
 
     data = f'{date} {message.channel} {message.author}: {message.content}'
 
+    print(data)
+
     if message.author == bot.user:
-        print(data)
         return
     else:
-        print(data)
-        guild = message.guild.name
-        if sauce.checkJson('guilds.json', guild):
-            try:
-                sponge.logMessages(message.guild.name, data)
-                sponge.updateServer('guilds.json', str(message.author), guild)
-            except Exception as e:
-                print(e)
-        else:
-            sponge.guildBuildLog(message.guild.name, message.author.name)
-        await bot.process_commands(message)
+        try:
+            guild = message.guild.name
+            if sauce.checkJson('guilds.json', guild):
+                try:
+                    sponge.logMessages(message.guild.name, data)
+                    sponge.updateServer('guilds.json', str(message.author), guild)
+                except Exception as e:
+                    print(e)
+            else:
+                sponge.guildBuildLog(message.guild.name, message.author.name)
+            await bot.process_commands(message)
+
+        except Exception as e:
+            pass
 
 @bot.command()
 async def clear(ctx, number:int=10):

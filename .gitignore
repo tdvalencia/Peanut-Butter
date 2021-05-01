@@ -6,3 +6,4 @@ le_hamburg/tools/*
 *.bat
 *.sh
 *.pyc
+__pycache__/*

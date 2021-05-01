@@ -22,23 +22,26 @@ class Badword(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         
-        arr = []
+        try:
+            arr = []
 
-        if message.author != self.bot.user:
-            guild = message.guild.name
-            parse = message.content.split(' ')
-            containsBad = None
-            uri = 'https://media.giphy.com/media/TKGMv1ukCJWwvYsXse/giphy.gif'
+            if message.author != self.bot.user:
+                guild = message.guild.name
+                parse = message.content.split(' ')
+                containsBad = None
+                uri = 'https://media.giphy.com/media/TKGMv1ukCJWwvYsXse/giphy.gif'
 
-            for word in parse:
-                if sauce.checkText('readText/bad-words.txt', word):
-                    arr.append(word)
-                    containsBad = True
+                for word in parse:
+                    if sauce.checkText('readText/bad-words.txt', word):
+                        arr.append(word)
+                        containsBad = True
 
-            if containsBad:
-                sponge.updateServer('badword.json', str(message.author), guild, len(arr))
-                # await message.channel.send('this bitch bouta get smoked for saying a no-no word')
-                # await message.channel.send(uri)
+                if containsBad:
+                    sponge.updateServer('badword.json', str(message.author), guild, len(arr))
+                    # await message.channel.send('this bitch bouta get smoked for saying a no-no word')
+                    # await message.channel.send(uri)
+        except Exception as e:
+            pass
 
     def graph(self, server:str):
         height = []

@@ -32,6 +32,8 @@ def checkText(file: str, query: str):
     for q in fileList:
         if query.lower() == q.strip():
             return True
+        elif 'everyone' == q.strip():
+            return True 
     return False
 
 def checkList(qlist: list, query: str):
